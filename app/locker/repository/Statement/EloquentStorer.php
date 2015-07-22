@@ -1,8 +1,11 @@
 <?php namespace Locker\Repository\Statement;
 
+use \app\locker\listeners\NewStatementsEventHandler;
 use \Locker\Helpers\Helpers as Helpers;
 use \Locker\XApi\Statement as XAPIStatement;
 use \Locker\Helpers\Exceptions as Exceptions;
+use \Event;
+
 
 interface Storer {
   public function store(array $statements, array $attachments, StoreOptions $opts);
@@ -97,9 +100,11 @@ class EloquentStorer extends EloquentReader implements Storer {
    * @param StoreOptions $opts
    */
   private function activateStatements(array $ids, StoreOptions $opts) {
-    return $this->where($opts)
+    $result = $this->where($opts)
       ->whereIn('statement.id', $ids)
       ->update(['active' => true]);
+    Event::fire(NewStatementsEventHandler::EVENT, $ids);
+    return $result;
   }
 
   /**

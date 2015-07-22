@@ -1,5 +1,7 @@
 <?php
 
+use \app\locker\listeners\NewStatementsEventHandler;
+
 /*
 |--------------------------------------------------------------------------
 | Learning Locker event listeners
@@ -31,3 +33,5 @@ Event::listen('Lrs.destroy', function ($opts) {
     $repo->destroy($client->_id, ['lrs_id' => $opts['id']]);
   }
 });
+
+Event::listen(NewStatementsEventHandler::EVENT, 'app\locker\listeners\NewStatementsEventHandler');
